@@ -40,6 +40,7 @@ export default function BlankPageExperience({
     const [showEndMessage, setShowEndMessage] = useState(false);
     const [error, setError] = useState<string | null>(null);
     const [timerActive, setTimerActive] = useState(false);
+    const [isLockedOut, setIsLockedOut] = useState(false);
 
     const messagesContainerRef = useRef<HTMLDivElement>(null);
     const sectionRef = useRef<HTMLElement>(null);
@@ -59,7 +60,28 @@ export default function BlankPageExperience({
     // Lock page scroll on mount
     useEffect(() => {
         window.scrollTo(0, 0);
-    }, []);
+
+        // Check for existing free session lockout
+        if (mode === "free") {
+            try {
+                const sessionData = localStorage.getItem("blankpage_free_session");
+                if (sessionData) {
+                    const { startedAt } = JSON.parse(sessionData);
+                    const elapsed = Date.now() - new Date(startedAt).getTime();
+                    const twentyFourHours = 24 * 60 * 60 * 1000;
+
+                    if (elapsed < twentyFourHours) {
+                        setIsLockedOut(true);
+                    } else {
+                        // Lockout expired, clear it
+                        localStorage.removeItem("blankpage_free_session");
+                    }
+                }
+            } catch {
+                // Ignore storage errors (incognito etc)
+            }
+        }
+    }, [mode]);
 
     // Scroll within messages container only
     useEffect(() => {
@@ -83,8 +105,16 @@ export default function BlankPageExperience({
         async (text: string) => {
             if (sessionEnded || isStreaming) return;
 
-            if (mode === "free" && !timerActive) {
-                setTimerActive(true);
+            if (mode === "free") {
+                if (!timerActive) {
+                    setTimerActive(true);
+                    // Start 24h lockout timer
+                    try {
+                        localStorage.setItem("blankpage_free_session", JSON.stringify({
+                            startedAt: new Date().toISOString()
+                        }));
+                    } catch { /* ignore */ }
+                }
             }
             if (!hasStartedTyping) {
                 setHasStartedTyping(true);
@@ -171,15 +201,45 @@ export default function BlankPageExperience({
             }}
         >
             {/* Progress bar */}
-            {mode === "free" && (
+            {mode === "free" && !isLockedOut && (
                 <ProgressBar isActive={timerActive} onComplete={handleTimerComplete} />
+            )}
+
+            {/* Locked out state */}
+            {isLockedOut && (
+                <div className="absolute inset-0 z-50 flex items-center justify-center p-8 text-center" style={{ backgroundColor: "var(--color-paper)" }}>
+                    <div>
+                        <p
+                            className="font-body italic mb-8"
+                            style={{
+                                fontSize: "1.125rem",
+                                color: "#8A8A8A",
+                                lineHeight: "1.6"
+                            }}
+                        >
+                            Your free session has ended.<br />
+                            The page will be here tomorrow. Or you can get yours now.
+                        </p>
+                        <button
+                            onClick={onScroll}
+                            className="inline-block border border-ink text-ink font-body transition-colors hover:bg-ink hover:text-paper"
+                            style={{
+                                padding: "1rem 3rem",
+                                fontSize: "var(--font-size-base)",
+                                letterSpacing: "0.1em",
+                            }}
+                        >
+                            Get Your Page
+                        </button>
+                    </div>
+                </div>
             )}
 
             {/* ==============================================================
                 PRE-CONVERSATION — position-locked centered layout
                 Everything positioned relative to the input which stays fixed
                 ============================================================== */}
-            {!isConversationActive && (
+            {!isConversationActive && !isLockedOut && (
                 <div
                     className="flex-1 flex flex-col items-center justify-center px-8 md:px-12"
                 >
@@ -269,7 +329,7 @@ export default function BlankPageExperience({
             {/* ==============================================================
                 CONVERSATION — messages + input pinned at bottom
                 ============================================================== */}
-            {isConversationActive && (
+            {isConversationActive && !isLockedOut && (
                 <div
                     className="flex-1 flex flex-col px-8 md:px-12"
                     style={{
