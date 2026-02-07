@@ -7,7 +7,6 @@ export async function GET(request: NextRequest) {
     const code = requestUrl.searchParams.get("code");
     const token_hash = requestUrl.searchParams.get("token_hash");
     const type = requestUrl.searchParams.get("type") as "magiclink" | "email" | null;
-    const next = requestUrl.searchParams.get("next") ?? "/page";
     const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:1110";
 
     console.log(`[AuthCallback] Processing callback. Code: ${!!code}, TokenHash: ${!!token_hash}, Type: ${type}`);
