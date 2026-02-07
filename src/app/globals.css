@@ -1,0 +1,186 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  /* Colors — monochrome only */
+  --color-ink: #1A1A1A;
+  --color-paper: #FAFAFA;
+  --color-muted: #8A8A8A;
+  --color-faint: #E5E5E5;
+
+  /* Typography — fluid sizes for readability across devices */
+  --font-body: var(--font-eb-garamond), Georgia, 'Times New Roman', serif;
+  --font-size-xs: 0.8rem;
+  --font-size-sm: 0.9375rem;
+  --font-size-base: clamp(1.0625rem, 1.5vw + 0.5rem, 1.25rem);
+  --font-size-lg: clamp(1.25rem, 2vw + 0.5rem, 1.5rem);
+  --font-size-xl: clamp(1.5rem, 2.5vw + 0.5rem, 2rem);
+  --font-size-2xl: clamp(1.75rem, 3vw + 0.5rem, 2.75rem);
+  --font-size-3xl: clamp(2rem, 4vw + 0.5rem, 3.5rem);
+  --font-size-4xl: clamp(2.5rem, 5vw + 0.5rem, 4.5rem);
+  --line-height-body: 1.75;
+  --line-height-heading: 1.2;
+  --letter-spacing-heading: -0.02em;
+
+  /* Spacing */
+  --space-xs: 0.5rem;
+  --space-sm: 1rem;
+  --space-md: 2rem;
+  --space-lg: 4rem;
+  --space-xl: 6rem;
+  --space-2xl: 8rem;
+  --space-section: clamp(4rem, 10vw + 2rem, 10rem);
+
+  /* Animation */
+  --ease-default: cubic-bezier(0.25, 0.1, 0.25, 1);
+  --ease-in: cubic-bezier(0.55, 0, 1, 0.45);
+  --ease-out: cubic-bezier(0, 0.55, 0.45, 1);
+  --ease-gentle: cubic-bezier(0.4, 0, 0.2, 1);
+  --duration-fast: 200ms;
+  --duration-normal: 400ms;
+  --duration-slow: 800ms;
+  --duration-reveal: 1200ms;
+  --duration-breath: 4000ms;
+}
+
+/* Mobile overrides */
+@media (max-width: 640px) {
+  :root {
+    --space-xl: 3rem;
+    --space-2xl: 5rem;
+  }
+}
+
+/* Reset and base */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  overflow-x: hidden;
+}
+
+body {
+  font-family: var(--font-body);
+  font-size: var(--font-size-base);
+  overflow-x: hidden;
+  line-height: var(--line-height-body);
+  color: var(--color-ink);
+  background-color: var(--color-paper);
+}
+
+/* No colored links — ever */
+a {
+  color: var(--color-ink);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  transition: opacity var(--duration-fast) var(--ease-default);
+}
+
+a:hover {
+  opacity: 0.7;
+}
+
+/* Selection */
+::selection {
+  background-color: var(--color-ink);
+  color: var(--color-paper);
+}
+
+/* Scrollbar — minimal */
+::-webkit-scrollbar {
+  width: 4px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--color-faint);
+  border-radius: 2px;
+}
+
+/* No focus rings with color */
+:focus-visible {
+  outline: 1px solid var(--color-muted);
+  outline-offset: 2px;
+}
+
+/* Cursor blink animation */
+@keyframes cursor-blink {
+
+  0%,
+  49% {
+    opacity: 1;
+  }
+
+  50%,
+  100% {
+    opacity: 0;
+  }
+}
+
+.cursor-blink {
+  animation: cursor-blink 1s step-end infinite;
+}
+
+/* Progress bar animation */
+@keyframes progress-fill {
+  from {
+    width: 0%;
+  }
+
+  to {
+    width: 100%;
+  }
+}
+
+/* Breathing animation for scroll indicator */
+@keyframes breathe {
+
+  0%,
+  100% {
+    opacity: 0.3;
+  }
+
+  50% {
+    opacity: 0.6;
+  }
+}
+
+.animate-breathe {
+  animation: breathe var(--duration-breath) var(--ease-default) infinite;
+}
+
+/* Shake animation for errors */
+@keyframes shake {
+
+  0%,
+  100% {
+    transform: translateX(0);
+  }
+
+  25% {
+    transform: translateX(-4px);
+  }
+
+  75% {
+    transform: translateX(4px);
+  }
+}
+
+.animate-shake {
+  animation: shake 0.3s var(--ease-default);
+}
+
+/* Prevent layout shift from font loading */
+.font-loading body {
+  font-size-adjust: 0.5;
+}

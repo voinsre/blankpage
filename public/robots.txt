@@ -1,0 +1,5 @@
+User-agent: *
+Allow: /
+Disallow: /api/
+Disallow: /page
+Sitemap: https://blankpageworth.com/sitemap.xml
