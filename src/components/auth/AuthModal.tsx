@@ -29,11 +29,13 @@ export default function AuthModal({ onClose, supabase }: AuthModalProps) {
         setError(null);
 
         try {
-            const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || window.location.origin;
+            // Always use the current origin for the callback to prevent environment mismatch
+            // e.g. if testing on localhost, we want to come back to localhost
+            const redirectUrl = `${window.location.origin}/api/auth/callback`;
             const { error: authError } = await supabase.auth.signInWithOtp({
                 email: email.trim(),
                 options: {
-                    emailRedirectTo: `${siteUrl}/api/auth/callback`,
+                    emailRedirectTo: redirectUrl,
                 },
             });
 
