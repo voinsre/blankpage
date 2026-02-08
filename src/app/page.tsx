@@ -9,6 +9,7 @@ import ManifestoSection from "@/components/manifesto/ManifestoSection";
 import HowThisWorks from "@/components/manifesto/HowThisWorks";
 import PurchaseSection from "@/components/purchase/PurchaseSection";
 import AuthModal from "@/components/auth/AuthModal";
+import ManifestoAudioPlayer from "@/components/manifesto/ManifestoAudioPlayer";
 import { MANIFESTO_CHAPTERS } from "@/lib/constants";
 
 type UserSession = {
@@ -145,6 +146,7 @@ export default function HomePage() {
 
       {/* ACT 2: The Manifesto */}
       <article>
+        <ManifestoAudioPlayer />
         {MANIFESTO_CHAPTERS.map((chapter, i) => (
           <ManifestoSection key={i} chapter={chapter} />
         ))}
