@@ -102,9 +102,15 @@ export default function PageApp() {
                 setWelcomePhase("showing");
                 markWelcomeSeen();
 
+                // Auto-dismiss after 8 seconds
                 setTimeout(() => {
                     setWelcomePhase((prev) => (prev === "showing" ? "fading" : prev));
                 }, 8000);
+
+                // Safety net: force "done" after 12s total in case animation callbacks fail
+                setTimeout(() => {
+                    setWelcomePhase((prev) => (prev !== "done" ? "done" : prev));
+                }, 12000);
             } else {
                 setWelcomePhase("done");
             }
@@ -260,8 +266,15 @@ export default function PageApp() {
                             ease: [0.4, 0, 0.2, 1],
                             delay: welcomePhase === "showing" ? 1 : 0,
                         }}
-                        className="fixed inset-0 z-40 flex items-center justify-center px-8"
+                        onAnimationComplete={() => {
+                            // Backup: if we finished fading, force done
+                            if (welcomePhase === "fading") {
+                                setWelcomePhase("done");
+                            }
+                        }}
+                        className="fixed inset-0 z-40 flex items-center justify-center px-8 cursor-pointer"
                         style={{ backgroundColor: "var(--color-paper)" }}
+                        onClick={() => setWelcomePhase("fading")}
                     >
                         <div
                             className="text-center italic"
@@ -406,74 +419,6 @@ export default function PageApp() {
                                 exit={{ opacity: 0 }}
                                 transition={{ duration: 1.2, ease: [0.4, 0, 0.2, 1] }}
                             >
-                                {/* ─── First-time welcome sequence ─── */}
-                                <AnimatePresence>
-                                    {(welcomePhase !== "done" && welcomePhase !== "checking") && (
-                                        <motion.div
-                                            key="welcome-overlay"
-                                            initial={{ opacity: 0 }}
-                                            animate={{ opacity: welcomePhase === "fading" ? 0 : 1 }}
-                                            exit={{ opacity: 0 }}
-                                            transition={{ duration: welcomePhase === "fading" ? 0.8 : 1.0, ease: [0.4, 0, 0.2, 1] }}
-                                            onAnimationComplete={() => {
-                                                if (welcomePhase === "fading") {
-                                                    setWelcomePhase("done");
-                                                }
-                                            }}
-                                            className="fixed inset-0 z-40 flex items-center justify-center cursor-pointer"
-                                            style={{ backgroundColor: "#FAFAFA" }}
-                                            onClick={() => setWelcomePhase("fading")}
-                                        >
-                                            <motion.div
-                                                initial={{ opacity: 0 }}
-                                                animate={{ opacity: 1 }}
-                                                transition={{ duration: 1.0, delay: 1.0, ease: [0.4, 0, 0.2, 1] }}
-                                                className="text-center px-8"
-                                                style={{ maxWidth: "480px" }}
-                                            >
-                                                <p
-                                                    className="font-body italic"
-                                                    style={{
-                                                        fontSize: "1.125rem",
-                                                        lineHeight: "1.7",
-                                                        color: "#8A8A8A",
-                                                        marginBottom: "2rem",
-                                                    }}
-                                                >
-                                                    This is your page.
-                                                </p>
-                                                <p
-                                                    className="font-body italic"
-                                                    style={{
-                                                        fontSize: "1.125rem",
-                                                        lineHeight: "1.7",
-                                                        color: "#8A8A8A",
-                                                    }}
-                                                >
-                                                    Type whatever is on your mind.
-                                                    <br />
-                                                    The Page will ask you one question at a time.
-                                                    <br />
-                                                    It won&apos;t give you answers. It won&apos;t tell you what to do.
-                                                </p>
-                                                <p
-                                                    className="font-body italic"
-                                                    style={{
-                                                        fontSize: "1.125rem",
-                                                        lineHeight: "1.7",
-                                                        color: "#8A8A8A",
-                                                        marginTop: "2rem",
-                                                    }}
-                                                >
-                                                    When you&apos;re ready, start typing.
-                                                    <br />
-                                                    Or don&apos;t. The page isn&apos;t going anywhere.
-                                                </p>
-                                            </motion.div>
-                                        </motion.div>
-                                    )}
-                                </AnimatePresence>
-
                                 {/* ─── Blank page experience (only after welcome is done or skipped) ─── */}
                                 {welcomePhase === "done" && (
                                     <>
