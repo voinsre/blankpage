@@ -44,6 +44,7 @@ export default function BlankPageExperience({
 
     const messagesContainerRef = useRef<HTMLDivElement>(null);
     const sectionRef = useRef<HTMLElement>(null);
+    const [viewportHeight, setViewportHeight] = useState<number | null>(null);
 
     // Stage timings
     useEffect(() => {
@@ -82,6 +83,39 @@ export default function BlankPageExperience({
             }
         }
     }, [mode]);
+
+    // Mobile keyboard detection via visualViewport API
+    useEffect(() => {
+        const vv = window.visualViewport;
+        if (!vv) return;
+
+        const handleResize = () => {
+            // When the keyboard opens, visualViewport.height shrinks
+            // Use it directly as our container height
+            setViewportHeight(vv.height);
+
+            // Scroll messages to bottom when keyboard opens
+            if (messagesContainerRef.current) {
+                requestAnimationFrame(() => {
+                    messagesContainerRef.current?.scrollTo({
+                        top: messagesContainerRef.current.scrollHeight,
+                        behavior: "smooth",
+                    });
+                });
+            }
+        };
+
+        // Set initial height
+        setViewportHeight(vv.height);
+
+        vv.addEventListener("resize", handleResize);
+        vv.addEventListener("scroll", handleResize);
+
+        return () => {
+            vv.removeEventListener("resize", handleResize);
+            vv.removeEventListener("scroll", handleResize);
+        };
+    }, []);
 
     // Scroll within messages container only
     useEffect(() => {
@@ -195,7 +229,7 @@ export default function BlankPageExperience({
             className="relative flex flex-col"
             style={{
                 backgroundColor: "var(--color-paper)",
-                height: "100dvh",
+                height: viewportHeight ? `${viewportHeight}px` : "100dvh",
                 overflow: "hidden",
                 overflowX: "hidden",
             }}

@@ -17,6 +17,12 @@ export const metadata: Metadata = {
   metadataBase: new URL(
     process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:1110"
   ),
+  viewport: {
+    width: "device-width",
+    initialScale: 1,
+    maximumScale: 1,
+    interactiveWidget: "resizes-content",
+  },
   icons: {
     icon: "/favicon.svg",
   },
