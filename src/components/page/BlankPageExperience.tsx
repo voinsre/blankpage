@@ -265,6 +265,21 @@ export default function BlankPageExperience({
                         >
                             Get Your Page
                         </button>
+                        <a
+                            href="/page"
+                            style={{
+                                display: "block",
+                                marginTop: "1.5rem",
+                                fontSize: "0.875rem",
+                                color: "#8A8A8A",
+                                textDecoration: "none",
+                                transition: "color 300ms",
+                            }}
+                            onMouseEnter={(e) => (e.currentTarget.style.color = "#1A1A1A")}
+                            onMouseLeave={(e) => (e.currentTarget.style.color = "#8A8A8A")}
+                        >
+                            my page →
+                        </a>
                     </div>
                 </div>
             )}
