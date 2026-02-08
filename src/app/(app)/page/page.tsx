@@ -8,6 +8,7 @@ import SessionSidebar from "@/components/history/SessionSidebar";
 import SaveSessionModal from "@/components/history/SaveSessionModal";
 import HowThisWorks from "@/components/manifesto/HowThisWorks";
 import ManifestoSection from "@/components/manifesto/ManifestoSection";
+import ManifestoAudioPlayer from "@/components/manifesto/ManifestoAudioPlayer";
 import { MANIFESTO_CHAPTERS } from "@/lib/constants";
 
 type Profile = {
@@ -469,6 +470,7 @@ export default function PageApp() {
 
                                 {/* Manifesto */}
                                 <article>
+                                    <ManifestoAudioPlayer />
                                     {MANIFESTO_CHAPTERS.map((chapter, i) => (
                                         <ManifestoSection key={i} chapter={chapter} />
                                     ))}
